@@ -1,0 +1,31 @@
+# Configuration for GPT-OSS20B Cybersecurity Fine-tuning
+
+# Model configuration
+model_name: "openai/gpt-oss-20b"
+output_dir: "./gpt-oss-cybersecurity-lora"
+max_length: 512
+
+# Dataset configuration
+validation_split: 0.1
+
+# LoRA configuration
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.1
+
+# Training configuration
+batch_size: 2
+eval_batch_size: 2
+gradient_accumulation_steps: 8
+epochs: 3
+learning_rate: 0.0002
+logging_steps: 10
+eval_steps: 100
+save_steps: 500
+warmup_steps: 100
+
+# Hardware considerations:
+# - Reduce batch_size if you have memory issues
+# - Increase gradient_accumulation_steps to maintain effective batch size
+# - Consider reducing max_length for memory constraints
+# - Use load_in_4bit instead of load_in_8bit for even lower memory usage
