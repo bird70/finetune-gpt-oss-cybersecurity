@@ -6,8 +6,8 @@ This repository contains code for fine-tuning OpenAI's GPT-OSS20B model for cybe
 **Note**: This implementation assumes access to appropriate computational resources and datasets. Adjust batch sizes, sequence lengths, and other parameters based on your available hardware and specific requirements.
 
 **Please make sure to follow the permitted uses for the Trendyol dataset and any other datasets you use in your fine-tuning process.**
-[https://huggingface.co/Trendyol/Trendyol-Cybersecurity-LLM-Qwen3-32B-Q8_0-GGUF]
-This example is for educational purposes and may require further adjustments based on your specific use case and environment.
+[https://huggingface.co/datasets/Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset]
+This example is for educational purposes only and may require further adjustments based on your specific use case and environment.
 
 ## Requirements
 
