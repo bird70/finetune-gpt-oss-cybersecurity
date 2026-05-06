@@ -66,9 +66,9 @@ class CybersecurityFineTuner:
     def __init__(self, config: Dict):
         """Initialize the fine-tuner with configuration."""
         self.config = config
-        self.model_name = config.get('model_name', 'unsloth/Llama-3.2-8B-Instruct-bnb-4bit')
+        self.model_name = config.get('model_name', 'unsloth/Llama-3.2-3B-Instruct-bnb-4bit')
         self.output_dir = config.get('output_dir', './llama3-cybersecurity-lora')
-        self.max_length = config.get('max_length', 4096)
+        self.max_length = config.get('max_length', 1024)
         
         self.tokenizer = None
         self.model = None
@@ -216,7 +216,7 @@ def load_fine_tuned_model(lora_adapter_path: str) -> Tuple[FastLanguageModel, Au
     
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=lora_adapter_path,
-        max_seq_length=4096,
+        max_seq_length=1024,
         dtype=None,
         load_in_4bit=True,
     )
@@ -226,9 +226,9 @@ def load_fine_tuned_model(lora_adapter_path: str) -> Tuple[FastLanguageModel, Au
 def create_sample_config() -> Dict:
     """Create a sample configuration."""
     return {
-        "model_name": "unsloth/Llama-3.2-8B-Instruct-bnb-4bit",
+        "model_name": "unsloth/Llama-3.2-3B-Instruct-bnb-4bit",
         "output_dir": "./llama3-cybersecurity-lora",
-        "max_length": 4096,
+        "max_length": 1024,
         "validation_split": 0.1,
         "downsample_size": 5000,
         "lora_r": 16,
@@ -268,7 +268,7 @@ def main():
         
         model, tokenizer = load_fine_tuned_model(args.inference)
         
-        config = {"model_name": "unsloth/Llama-3.2-8B-Instruct-bnb-4bit"}
+        config = {"model_name": "unsloth/Llama-3.2-3B-Instruct-bnb-4bit"}
         fine_tuner = CybersecurityFineTuner(config)
         fine_tuner.model = model
         fine_tuner.tokenizer = tokenizer

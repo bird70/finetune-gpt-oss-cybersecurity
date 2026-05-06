@@ -45,6 +45,6 @@ If you approve this plan, Sisyphus will execute the following:
 
 ## Final Verification Wave
 *   [x] Task 1 completed and verified.
-*   [ ] Task 2 completed and verified.
-*   [ ] Task 3 completed and verified.
+*   [x] Task 2 completed and verified.
+*   [x] Task 3 completed and verified.
 *   [ ] User gives final explicit approval of the implementation.

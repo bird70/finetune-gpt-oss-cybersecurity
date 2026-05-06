@@ -1,16 +1,19 @@
-# GPT-OSS20B Cybersecurity Fine-tuning with Unsloth
+# Llama 3.2 3B Cybersecurity Micro-Fine-Tuning with Unsloth
 
-This repository contains code for fine-tuning OpenAI's GPT-OSS20B model for cybersecurity applications using Unsloth. This is an updated version of an older project, now using Unsloth for a more efficient fine-tuning process.
+This repository contains code for "Micro-Fine-Tuning" the Llama 3.2 3B model for cybersecurity applications using Unsloth. This architecture is optimized for low-resource environments, specifically targeting consumer-grade GPUs with as little as 4GB VRAM.
 
-**Note**: This implementation assumes access to appropriate computational resources and datasets. Adjust batch sizes, sequence lengths, and other parameters based on your available hardware and specific requirements.
+**Note**: This implementation is designed for extreme efficiency. It leverages Unsloth's optimizations to enable training on hardware that would otherwise be insufficient for standard fine-tuning.
 
-**Please make sure to follow the permitted uses for the Trendyol dataset and any other datasets you use in your fine-tuning process.**
-[https://huggingface.co/datasets/Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset]
+**Datasets**:
+- **Trendyol**: [https://huggingface.co/datasets/Trendyol/Trendyol-Cybersecurity-Instruction-Tuning-Dataset]
+- **OptikalLLM**: [https://huggingface.co/datasets/OptikalLLM/CyberSecurity-Instruction-Dataset]
+- **Cybersec-Reasoning**: [https://huggingface.co/datasets/Llama-Factory/Cybersecurity-Reasoning]
+
 This example is for educational purposes only and may require further adjustments based on your specific use case and environment.
 
 ## Requirements
 
-- CUDA-capable GPU with at least 14GB VRAM (recommended)
+- CUDA-capable GPU with at least 4GB VRAM
 - Python 3.8+
 - CUDA 11.8+ and compatible PyTorch installation
 
@@ -40,7 +43,7 @@ python fine_tune_gpt_oss_cybersecurity.py --config config.yaml --dataset "Trendy
 
 ### 3. Run Inference
 ```bash
-python fine_tune_gpt_oss_cybersecurity.py --inference ./gpt-oss-cybersecurity-lora --prompt "What are the signs of a phishing attack?"
+python fine_tune_gpt_oss_cybersecurity.py --inference ./llama-3.2-3b-cybersecurity-lora --prompt "What are the signs of a phishing attack?"
 ```
 
 ## Dataset Format
@@ -57,7 +60,7 @@ The script supports multiple dataset formats, including Hugging Face datasets, J
 
 Key configuration parameters in `config.yaml`:
 
-- `model_name`: Base model to fine-tune (default: `unsloth/gpt-oss-20b`)
+- `model_name`: Base model to fine-tune (default: `unsloth/Llama-3.2-3B-bnb-4bit`)
 - `batch_size`: Training batch size (reduce if memory issues)
 - `gradient_accumulation_steps`: Effective batch size multiplier
 - `lora_r`: LoRA rank (higher = more parameters, better quality)
@@ -66,7 +69,7 @@ Key configuration parameters in `config.yaml`:
 
 ## Memory Optimization with Unsloth
 
-Unsloth significantly reduces VRAM usage, allowing to fine-tune large models on consumer GPUs. For further memory optimization:
+Unsloth significantly reduces VRAM usage, allowing to fine-tune models on consumer GPUs. For further memory optimization:
 
 1. Reduce `batch_size` to 1
 2. Increase `gradient_accumulation_steps` to maintain effective batch size
@@ -74,8 +77,8 @@ Unsloth significantly reduces VRAM usage, allowing to fine-tune large models on 
 
 ## Hardware Requirements
 
-- **Minimum**: 14GB GPU memory with Unsloth
-- **Recommended**: 24GB+ GPU memory
+- **Minimum**: 4GB GPU memory with Unsloth
+- **Recommended**: 8GB+ GPU memory
 - **CPU fallback**: Possible but extremely slow
 
 ## Troubleshooting
@@ -88,4 +91,4 @@ Unsloth significantly reduces VRAM usage, allowing to fine-tune large models on 
 ## Files Generated
 
 After training:
-- `./gpt-oss-cybersecurity-lora/`: Model files, including the LoRA adapter and tokenizer.
+- `./llama-3.2-3b-cybersecurity-lora/`: Model files, including the LoRA adapter and tokenizer.
