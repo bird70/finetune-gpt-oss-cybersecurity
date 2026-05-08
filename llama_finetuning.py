@@ -293,6 +293,99 @@ print(f"\n--- Inference Result ---")
 print(f"Prompt: {prompt_text}")
 print(f"Generated Response: {extracted_response}")
 
+"""## Performance Validation: Fine-tuned vs. Base Model
+This section runs a side-by-side comparison to see if the model has actually improved on cybersecurity knowledge.
+"""
+
+import pandas as pd
+from unsloth import FastLanguageModel
+
+# Enable native unsloth inference speedups
+FastLanguageModel.for_inference(model)
+
+# Expanded and more diverse evaluation prompts
+eval_prompts = [
+    "What are the primary indicators of a Buffer Overflow vulnerability in C code?",
+    "Write a secure Python function to handle user file uploads.",
+    "Explain the difference between Stored and Reflected XSS.",
+    "How should a SOC analyst respond to a detected Brute Force attack on an SSH service?",
+    "Explain the concept of ARP Spoofing and how it can be mitigated at the network layer.",
+    "Compare the security of AES and DES encryption algorithms.",
+    "Provide an Nmap command to perform a comprehensive service version detection and OS fingerprinting scan."
+]
+
+def get_improved_response(model, tokenizer, prompt):
+    formatted = llama3_template.format(prompt, "")
+    inputs = tokenizer([formatted], return_tensors="pt").to("cuda")
+
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=512,
+        use_cache=True,
+        temperature=0.7,
+        top_p=0.9,
+        do_sample=True,
+        eos_token_id=tokenizer.eos_token_id
+    )
+
+    decoded = tokenizer.batch_decode(outputs, skip_special_tokens=False)[0]
+
+    marker = "<|start_header_id|>assistant<|end_header_id|>"
+    if marker in decoded:
+        parts = decoded.split(marker)
+        response = parts[-1].replace("<|eot_id|>", "").replace("<|end_of_text|>", "").strip()
+        return response
+    return decoded.strip()
+
+results = []
+
+print("--- Generating with FINE-TUNED model (Optimized) ---")
+for p in eval_prompts:
+    results.append({"Prompt": p, "Fine-tuned": get_improved_response(model, tokenizer, p)})
+
+print("--- Generating with BASE model ---")
+with model.disable_adapter():
+    for i, p in enumerate(eval_prompts):
+        results[i]["Base Model"] = get_improved_response(model, tokenizer, p)
+
+df_compare = pd.DataFrame(results)
+display(df_compare.style.set_properties(**{'text-align': 'left', 'white-space': 'pre-wrap'}))
+
+# Detailed verification of the outputs
+for i, res in enumerate(results[:2]): # Checking first two prompts
+    print(f"--- PROMPT {i+1}: {res['Prompt']} ---")
+    print(f"\n[COLUMN: FINE-TUNED]\n{res['Fine-tuned']}")
+    print(f"\n[COLUMN: BASE MODEL]\n{res['Base Model']}")
+    print("-" * 50)
+
+# Also check if the adapter is currently active in the model
+print(f"Is model currently using an adapter? {model.active_adapter if hasattr(model, 'active_adapter') else 'No active adapter detected'}")
+
+import json
+import matplotlib.pyplot as plt
+
+# Load the trainer state to see the loss curve
+stats_path = os.path.join(latest_checkpoint, 'trainer_state.json')
+
+if os.path.exists(stats_path):
+    with open(stats_path, 'r') as f:
+        stats = json.load(f)
+
+    steps = [log['step'] for log in stats['log_history'] if 'loss' in log]
+    losses = [log['loss'] for log in stats['log_history'] if 'loss' in log]
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(steps, losses, label='Training Loss')
+    plt.title('Training Loss Curve')
+    plt.xlabel('Step')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+    print(f"Final recorded loss: {losses[-1] if losses else 'N/A'}")
+else:
+    print("Trainer state not found. Could not plot loss.")
+
 """### Export to GGUF for Ollama
 To use this model in Ollama, we need to export it to GGUF format. You can choose different quantization methods (e.g., `q4_k_m` is a good balance of speed and quality).
 """
